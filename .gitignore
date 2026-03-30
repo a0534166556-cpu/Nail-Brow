@@ -1,0 +1,8 @@
+node_modules
+dist
+.netlify
+data/appointments.json
+.DS_Store
+*.local
+_srv_err.txt
+_srv_out.txt
