@@ -2,6 +2,7 @@ import fs from 'fs/promises'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { getStore } from '@netlify/blobs'
+import * as db from './db.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const dataDir = path.join(__dirname, '..', 'data')
@@ -10,8 +11,10 @@ const dataFile = path.join(dataDir, 'appointments.json')
 const BLOB_STORE = 'nail-studio-appointments'
 const BLOB_KEY = 'appointments-list'
 
-function useBlobs() {
-  return process.env.NETLIFY_STORAGE === 'blobs'
+function storageMode() {
+  if (process.env.DATABASE_URL) return 'pg'
+  if (process.env.NETLIFY_STORAGE === 'blobs') return 'blobs'
+  return 'fs'
 }
 
 async function readFs() {
@@ -48,11 +51,39 @@ async function writeBlobs(list) {
 }
 
 export async function readAppointments() {
-  if (useBlobs()) return readBlobs()
+  if (storageMode() === 'pg') return db.pgReadAppointments()
+  if (storageMode() === 'blobs') return readBlobs()
   return readFs()
 }
 
-export async function writeAppointments(list) {
-  if (useBlobs()) return writeBlobs(list)
-  return writeFs(list)
+export async function appendAppointment(row) {
+  if (storageMode() === 'pg') {
+    await db.pgInsertAppointment(row)
+    return
+  }
+  if (storageMode() === 'blobs') {
+    const list = await readBlobs()
+    list.push(row)
+    await writeBlobs(list)
+    return
+  }
+  const list = await readFs()
+  list.push(row)
+  await writeFs(list)
+}
+
+export async function removeAppointment(id) {
+  if (storageMode() === 'pg') return db.pgDeleteAppointment(id)
+  if (storageMode() === 'blobs') {
+    const list = await readBlobs()
+    const next = list.filter((a) => a.id !== id)
+    if (next.length === list.length) return false
+    await writeBlobs(next)
+    return true
+  }
+  const list = await readFs()
+  const next = list.filter((a) => a.id !== id)
+  if (next.length === list.length) return false
+  await writeFs(next)
+  return true
 }

@@ -2,6 +2,13 @@ import type { Appointment } from '../types/appointment'
 
 const jsonHeaders = { 'Content-Type': 'application/json' } as const
 
+const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+
+function apiUrl(path: string): string {
+  const p = path.startsWith('/') ? path : `/${path}`
+  return API_ORIGIN ? `${API_ORIGIN}${p}` : p
+}
+
 export async function createAppointment(body: {
   name: string
   phone: string
@@ -23,7 +30,7 @@ export async function createAppointment(body: {
 }
 
 export async function listAppointments(token: string): Promise<Appointment[]> {
-  const res = await fetch('/api/appointments', {
+  const res = await fetch(apiUrl('/api/appointments'), {
     headers: { Authorization: `Bearer ${token}` },
   })
   const data = (await res.json()) as Appointment[] | { error?: string }
@@ -34,7 +41,7 @@ export async function listAppointments(token: string): Promise<Appointment[]> {
 }
 
 export async function deleteAppointment(id: string, token: string): Promise<void> {
-  const res = await fetch(`/api/appointments/${encodeURIComponent(id)}`, {
+  const res = await fetch(apiUrl(`/api/appointments/${encodeURIComponent(id)}`), {
     method: 'DELETE',
     headers: { Authorization: `Bearer ${token}` },
   })

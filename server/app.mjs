@@ -3,7 +3,7 @@ import cors from 'cors'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import crypto from 'crypto'
-import { readAppointments, writeAppointments } from './storage.mjs'
+import { appendAppointment, readAppointments, removeAppointment } from './storage.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
@@ -80,13 +80,11 @@ export function createApp({ enableStatic = false } = {}) {
       return
     }
     const { id } = req.params
-    const list = await readAppointments()
-    const next = list.filter((a) => a.id !== id)
-    if (next.length === list.length) {
+    const ok = await removeAppointment(id)
+    if (!ok) {
       res.status(404).json({ error: 'לא נמצא' })
       return
     }
-    await writeAppointments(next)
     res.json({ ok: true })
   })
 
