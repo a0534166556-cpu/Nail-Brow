@@ -3,7 +3,6 @@ import { NAIL_SERVICES, BROW_SERVICES } from '../constants/services'
 
 const IMG_NAILS =
   'https://images.unsplash.com/photo-1604654894610-df63bc536371?auto=format&w=900&h=1120&fit=crop&q=80'
-/** פורטרט קלוז-אפ — Unsplash מתוייג "eyebrow" + "closeup" (Taylor Heery) */
 const IMG_BROWS =
   'https://images.unsplash.com/photo-1595550912256-b24059bb08e8?auto=format&w=760&h=950&fit=crop&crop=faces&facepad=3&q=85'
 const IMG_STUDIO =
@@ -19,20 +18,23 @@ export function Home() {
             <p className="eyebrow">סטודיו יוקרתי לנשים</p>
             <h1>ציפורניים מושלמות וגבות שמסגרות את הפנים</h1>
             <p className="lead">
-              בניית ציפורניים, ג׳ל, מניקור ופדיקור — לצד עיצוב גבות, צבע ולמינציה. חוויית טיפוח רגועה,
+              בניית ציפורניים, ג׳ל, מניקור ופדיקור — לצד עיצוב גבות, צבע וטיפולים מקצועיים. חוויית טיפוח רגועה,
               נקייה ומדויקת.
             </p>
             <div className="hero-actions">
-              <Link to="/booking" className="btn btn-primary">
+              <Link to="/menu" className="btn btn-primary">
+                תפריט ומחירים
+              </Link>
+              <Link to="/booking" className="btn btn-ghost">
                 קביעת תור
               </Link>
-              <Link to="/services" className="btn btn-ghost">
-                כל השירותים
+              <Link to="/contact" className="btn btn-ghost">
+                צור קשר
               </Link>
             </div>
             <ul className="hero-bullets">
               <li>חומרים איכותיים וצבעים עשירים</li>
-              <li>היגיינה וסטריליזציה קפדנית</li>
+              <li>בתפריט — כל הפריטים למכירה ולטיפול, כולל לק ג׳ל ומוצרי גבות</li>
               <li>ייעוץ מקצועי לפי סגנון ואורח חיים</li>
             </ul>
           </div>
@@ -78,7 +80,12 @@ export function Home() {
       <section className="section">
         <div className="container">
           <h2 className="section-title">ציפורניים</h2>
-          <p className="section-sub">טיפוח ידיים ורגליים — מקצועי, עדין ומדויק.</p>
+          <p className="section-sub">
+            טיפוח ידיים ורגליים — מקצועי, עדין ומדויק.{' '}
+            <Link to="/menu" className="section-inline-link">
+              כל המחירים והפריטים — בתפריט
+            </Link>
+          </p>
           <div className="cards">
             {NAIL_SERVICES.map((s) => (
               <article key={s.id} className="card">
@@ -102,9 +109,12 @@ export function Home() {
               </article>
             ))}
           </div>
-          <div className="section-cta">
+          <div className="section-cta-row">
+            <Link to="/menu" className="btn btn-ghost">
+              כל המחירים והמוצרים בתפריט
+            </Link>
             <Link to="/booking" className="btn btn-primary">
-              בואי נקבע תור
+              קביעת תור
             </Link>
           </div>
         </div>

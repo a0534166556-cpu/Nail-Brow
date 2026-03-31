@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, useSearchParams } from 'react-router-dom'
 import { createAppointment } from '../api/client'
 import { BOOKING_SERVICE_OPTIONS } from '../constants/services'
 
@@ -12,14 +12,30 @@ const todayStr = () => {
 }
 
 export function Booking() {
+  const [searchParams] = useSearchParams()
+  const defaultService = BOOKING_SERVICE_OPTIONS[0] ?? 'אחר / שירות שלא ברשימה'
+
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
-  const [service, setService] = useState<string>(BOOKING_SERVICE_OPTIONS[0])
+  const [service, setService] = useState<string>(defaultService)
   const [date, setDate] = useState(todayStr())
   const [time, setTime] = useState('10:00')
   const [notes, setNotes] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
   const [message, setMessage] = useState('')
+
+  useEffect(() => {
+    const raw = searchParams.get('service')
+    if (!raw) return
+    try {
+      const decoded = decodeURIComponent(raw)
+      if (BOOKING_SERVICE_OPTIONS.includes(decoded)) {
+        setService(decoded)
+      }
+    } catch {
+      /* ignore malformed query */
+    }
+  }, [searchParams])
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -109,7 +125,9 @@ export function Booking() {
         ) : null}
 
         <p className="back-link">
-          <Link to="/">חזרה לדף הבית</Link>
+          <Link to="/menu">חזרה לתפריט</Link>
+          {' · '}
+          <Link to="/">דף הבית</Link>
         </p>
       </div>
     </div>

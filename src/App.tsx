@@ -1,9 +1,10 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes } from 'react-router-dom'
 import { Layout } from './components/Layout'
 import { Admin } from './pages/Admin'
 import { Booking } from './pages/Booking'
 import { Home } from './pages/Home'
-import { Services } from './pages/Services'
+import { Contact } from './pages/Contact'
+import { Menu } from './pages/Menu'
 
 export default function App() {
   return (
@@ -11,8 +12,10 @@ export default function App() {
       <Routes>
         <Route element={<Layout />}>
           <Route path="/" element={<Home />} />
-          <Route path="/services" element={<Services />} />
+          <Route path="/menu" element={<Menu />} />
+          <Route path="/services" element={<Navigate to="/menu" replace />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/contact" element={<Contact />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>

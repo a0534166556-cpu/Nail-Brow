@@ -1,6 +1,8 @@
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useLocation } from 'react-router-dom'
 
 export function Layout() {
+  const { pathname } = useLocation()
+
   return (
     <div className="layout">
       <header className="header">
@@ -13,7 +15,8 @@ export function Layout() {
           </Link>
           <nav className="nav" aria-label="ניווט ראשי">
             <Link to="/">בית</Link>
-            <Link to="/services">שירותים</Link>
+            <Link to="/menu">תפריט</Link>
+            <Link to="/contact">צור קשר</Link>
             <Link to="/booking" className="nav-cta">
               קביעת תור
             </Link>
@@ -24,12 +27,20 @@ export function Layout() {
         </div>
       </header>
       <main className="main">
-        <Outlet />
+        <div className="page-enter" key={pathname}>
+          <Outlet />
+        </div>
       </main>
       <footer className="footer">
         <div className="footer-inner">
           <p>© {new Date().getFullYear()} סטודיו ציפורניים וגבות — כל הזכויות שמורות.</p>
-          <p className="footer-note">לקביעת תור: דף &quot;קביעת תור&quot; או יצירת קשר בטלפון.</p>
+          <p className="footer-note">
+            <Link to="/menu">תפריט</Link>
+            {' · '}
+            <Link to="/contact">צור קשר</Link>
+            {' · '}
+            <Link to="/booking">קביעת תור</Link>
+          </p>
         </div>
       </footer>
     </div>

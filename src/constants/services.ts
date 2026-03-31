@@ -1,3 +1,8 @@
+import { getBookingOptions } from './menuItems'
+
+/** אפשרויות בטופס קביעת תור — נגזרות מהתפריט */
+export const BOOKING_SERVICE_OPTIONS: string[] = getBookingOptions()
+
 export const NAIL_SERVICES = [
   { id: 'extension', title: 'בניית ציפורניים / הארכה', desc: 'ארכה בעמידות גבוהה, צורה מדויקת ולוק מושלם.' },
   { id: 'gel', title: 'ציפורניים ג׳ל', desc: 'ציפוי ג׳ל חזק, ברק עדין ועמידות לאורך זמן.' },
@@ -10,16 +15,4 @@ export const BROW_SERVICES = [
   { id: 'shape', title: 'עיצוב גבות', desc: 'עיצוב לפי מבנה הפנים — טבעי ומדויק.' },
   { id: 'tint', title: 'צבע גבות', desc: 'הדגשת גבות בגוון שמתאים לעור ולשיער.' },
   { id: 'lamination', title: 'למינציה לגבות', desc: 'מראה מלא, מסודר ומורם לאורך שבועות.' },
-] as const
-
-export const BOOKING_SERVICE_OPTIONS = [
-  'בניית ציפורניים / הארכה',
-  'ציפורניים ג׳ל',
-  'מניקור קלאסי',
-  'פדיקור',
-  'אמנות ציפורניים',
-  'עיצוב גבות',
-  'צבע גבות',
-  'למינציה לגבות',
-  'שילוב טיפול (ציון בפרטים)',
 ] as const
