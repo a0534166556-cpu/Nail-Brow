@@ -65,12 +65,10 @@ export function createApp({ enableStatic = false } = {}) {
       return
     }
 
-    const list = await readAppointments()
     const id = crypto.randomUUID()
     const createdAt = new Date().toISOString()
     const row = { id, ...trimmed, createdAt }
-    list.push(row)
-    await writeAppointments(list)
+    await appendAppointment(row)
     res.status(201).json(row)
   })
 

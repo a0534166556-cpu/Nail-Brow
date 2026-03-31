@@ -5,9 +5,10 @@ const isProd = process.env.NODE_ENV === 'production'
 
 const app = createApp({ enableStatic: isProd })
 
-const server = app.listen(PORT)
+const HOST = process.env.NODE_ENV === 'production' ? '0.0.0.0' : '127.0.0.1'
+const server = app.listen(PORT, HOST)
 server.on('listening', () => {
-  console.log(`API server http://127.0.0.1:${PORT}`)
+  console.log(`API server http://${HOST}:${PORT}`)
   if (isProd) console.log('Serving static from dist/')
 })
 server.on('error', (err) => {
