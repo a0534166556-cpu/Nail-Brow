@@ -119,6 +119,45 @@ export function Home() {
           </div>
         </div>
       </section>
+
+      <section className="section">
+        <div className="container">
+          <div className="pretty-band">
+            <div className="pretty-band-copy">
+              <h2 className="pretty-band-title">להרגיש מטופח — בלי להתאמץ</h2>
+              <p className="pretty-band-sub">
+                טיפול נקי ומדויק, התאמה אישית, ותוצאה שמחזיקה. אפשר לקבוע תור אונליין או לשלוח הודעה.
+              </p>
+              <div className="pretty-band-actions">
+                <Link to="/booking" className="btn btn-primary">
+                  קביעת תור
+                </Link>
+                <Link to="/menu" className="btn btn-ghost">
+                  תפריט ומחירים
+                </Link>
+              </div>
+            </div>
+            <div className="pretty-band-grid" aria-label="יתרונות">
+              <div className="pretty-chip">
+                <span className="pretty-chip-kicker">תוצאה</span>
+                <span className="pretty-chip-main">לוק נקי וברק עדין</span>
+              </div>
+              <div className="pretty-chip">
+                <span className="pretty-chip-kicker">עמידות</span>
+                <span className="pretty-chip-main">מחזיק מעמד לאורך זמן</span>
+              </div>
+              <div className="pretty-chip">
+                <span className="pretty-chip-kicker">היגיינה</span>
+                <span className="pretty-chip-main">כלים נקיים וסביבה נעימה</span>
+              </div>
+              <div className="pretty-chip">
+                <span className="pretty-chip-kicker">התאמה</span>
+                <span className="pretty-chip-main">סגנון שמתאים לך</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
     </>
   )
 }
