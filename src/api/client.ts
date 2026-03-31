@@ -2,7 +2,13 @@ import type { Appointment } from '../types/appointment'
 
 const jsonHeaders = { 'Content-Type': 'application/json' } as const
 
-const API_ORIGIN = (import.meta.env.VITE_API_BASE_URL ?? '').replace(/\/$/, '')
+const rawBase = (import.meta.env.VITE_API_BASE_URL ?? '').trim().replace(/\/$/, '')
+const API_ORIGIN =
+  rawBase === ''
+    ? ''
+    : /^https?:\/\//i.test(rawBase)
+      ? rawBase
+      : `https://${rawBase}`
 
 function apiUrl(path: string): string {
   const p = path.startsWith('/') ? path : `/${path}`
@@ -17,7 +23,7 @@ export async function createAppointment(body: {
   time: string
   notes?: string
 }): Promise<Appointment> {
-  const res = await fetch('/api/appointments', {
+  const res = await fetch(apiUrl('/api/appointments'), {
     method: 'POST',
     headers: jsonHeaders,
     body: JSON.stringify(body),
