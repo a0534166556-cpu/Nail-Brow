@@ -5,6 +5,8 @@ import { Booking } from './pages/Booking'
 import { Home } from './pages/Home'
 import { Contact } from './pages/Contact'
 import { Menu } from './pages/Menu'
+import { WebForBusiness } from './pages/WebForBusiness'
+import { GiftScratch } from './pages/GiftScratch'
 
 export default function App() {
   return (
@@ -15,7 +17,9 @@ export default function App() {
           <Route path="/menu" element={<Menu />} />
           <Route path="/services" element={<Navigate to="/menu" replace />} />
           <Route path="/booking" element={<Booking />} />
+          <Route path="/gift-scratch" element={<GiftScratch />} />
           <Route path="/contact" element={<Contact />} />
+          <Route path="/website-for-business" element={<WebForBusiness />} />
           <Route path="/admin" element={<Admin />} />
         </Route>
       </Routes>

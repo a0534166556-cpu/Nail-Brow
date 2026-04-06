@@ -1,4 +1,5 @@
-import type { Appointment } from '../types/appointment'
+import type { Appointment, CreateAppointmentResult } from '../types/appointment'
+import type { BookingSlotInfo } from '../types/bookingSlots'
 
 const jsonHeaders = { 'Content-Type': 'application/json' } as const
 
@@ -15,6 +16,26 @@ function apiUrl(path: string): string {
   return API_ORIGIN ? `${API_ORIGIN}${p}` : p
 }
 
+async function parseJsonBody<T>(res: Response): Promise<T | null> {
+  const text = await res.text()
+  if (!text) return null
+  try {
+    return JSON.parse(text) as T
+  } catch {
+    return null
+  }
+}
+
+export async function fetchBookingSlots(date: string): Promise<BookingSlotInfo[]> {
+  const q = new URLSearchParams({ date })
+  const res = await fetch(apiUrl(`/api/booking/slots?${q.toString()}`))
+  const data = await parseJsonBody<{ slots?: BookingSlotInfo[]; error?: string }>(res)
+  if (!res.ok) {
+    throw new Error(data?.error ?? 'שגיאה בטעינת משבצות')
+  }
+  return Array.isArray(data?.slots) ? data.slots : []
+}
+
 export async function createAppointment(body: {
   name: string
   phone: string
@@ -22,17 +43,29 @@ export async function createAppointment(body: {
   date: string
   time: string
   notes?: string
-}): Promise<Appointment> {
+  email?: string
+}): Promise<CreateAppointmentResult> {
   const res = await fetch(apiUrl('/api/appointments'), {
     method: 'POST',
     headers: jsonHeaders,
     body: JSON.stringify(body),
   })
-  const data = (await res.json()) as Appointment | { error?: string }
+  const data = await parseJsonBody<CreateAppointmentResult | { error?: string }>(res)
   if (!res.ok) {
-    throw new Error('error' in data && data.error ? data.error : 'שגיאה בשמירת התור')
+    const msg =
+      data && 'error' in data && data.error
+        ? data.error
+        : res.status === 502 || res.status === 503
+          ? 'השרת לא זמין כרגע (שגיאת שער). נסה שוב בעוד רגע.'
+          : res.status === 409
+            ? 'המשבצת תפוסה. בחרי שעה אחרת.'
+            : 'שגיאה בשמירת התור'
+    throw new Error(msg)
   }
-  return data as Appointment
+  if (!data || !('id' in data)) {
+    throw new Error('תשובה לא תקינה מהשרת')
+  }
+  return data as CreateAppointmentResult
 }
 
 export async function listAppointments(token: string): Promise<Appointment[]> {

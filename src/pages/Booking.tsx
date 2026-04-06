@@ -1,7 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link, useSearchParams } from 'react-router-dom'
-import { createAppointment } from '../api/client'
+import { createAppointment, fetchBookingSlots } from '../api/client'
+import { markScratchEligible } from '../constants/scratchStorage'
 import { BOOKING_SERVICE_OPTIONS } from '../constants/services'
+import type { BookingSlotInfo } from '../types/bookingSlots'
 
 const todayStr = () => {
   const d = new Date()
@@ -9,6 +11,11 @@ const todayStr = () => {
   const m = String(d.getMonth() + 1).padStart(2, '0')
   const day = String(d.getDate()).padStart(2, '0')
   return `${y}-${m}-${day}`
+}
+
+function firstAvailableTime(slots: BookingSlotInfo[]): string {
+  const a = slots.find((s) => s.available)
+  return a?.time ?? slots[0]?.time ?? '10:00'
 }
 
 export function Booking() {
@@ -21,8 +28,13 @@ export function Booking() {
   const [date, setDate] = useState(todayStr())
   const [time, setTime] = useState('10:00')
   const [notes, setNotes] = useState('')
+  const [email, setEmail] = useState('')
   const [status, setStatus] = useState<'idle' | 'loading' | 'ok' | 'err'>('idle')
   const [message, setMessage] = useState('')
+  const [slots, setSlots] = useState<BookingSlotInfo[] | null>(null)
+  const [slotsLoading, setSlotsLoading] = useState(true)
+  const [slotsError, setSlotsError] = useState('')
+  const [giftUnlocked, setGiftUnlocked] = useState(false)
 
   useEffect(() => {
     const raw = searchParams.get('service')
@@ -37,17 +49,71 @@ export function Booking() {
     }
   }, [searchParams])
 
+  useEffect(() => {
+    let cancelled = false
+    setSlotsLoading(true)
+    setSlotsError('')
+    ;(async () => {
+      try {
+        const s = await fetchBookingSlots(date)
+        if (cancelled) return
+        setSlots(s)
+        setTime((prev) => {
+          const cur = s.find((x) => x.time === prev && x.available)
+          if (cur) return prev
+          return firstAvailableTime(s)
+        })
+      } catch (e) {
+        if (!cancelled) {
+          setSlotsError(e instanceof Error ? e.message : 'שגיאה בטעינת משבצות')
+          setSlots(null)
+        }
+      } finally {
+        if (!cancelled) setSlotsLoading(false)
+      }
+    })()
+    return () => {
+      cancelled = true
+    }
+  }, [date])
+
+  const hasAnyAvailable = slots?.some((s) => s.available) ?? false
+
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault()
     setStatus('loading')
     setMessage('')
     try {
-      await createAppointment({ name, phone, service, date, time, notes })
+      const created = await createAppointment({
+        name,
+        phone,
+        service,
+        date,
+        time,
+        notes,
+        ...(email.trim() ? { email: email.trim() } : {}),
+      })
+      if (created.giftCardUnlocked) {
+        markScratchEligible()
+        setGiftUnlocked(true)
+      } else {
+        setGiftUnlocked(false)
+      }
       setStatus('ok')
-      setMessage('התור נשמר בהצלחה! נחזור אליך לאישור במידת הצורך.')
+      setMessage(
+        'התור נשמר בהצלחה! נחזור אליך לאישור במידת הצורך. אם הוזן אימייל והמערכת מוגדרת — תישלח אליך גם הודעה בדוא״ל.',
+      )
       setName('')
       setPhone('')
+      setEmail('')
       setNotes('')
+      try {
+        const s = await fetchBookingSlots(date)
+        setSlots(s)
+        setTime(firstAvailableTime(s))
+      } catch {
+        /* ignore refresh error */
+      }
     } catch (err) {
       setStatus('err')
       setMessage(err instanceof Error ? err.message : 'אירעה שגיאה')
@@ -59,7 +125,8 @@ export function Booking() {
       <div className="container page-narrow">
         <h1 className="page-title">קביעת תור</h1>
         <p className="page-lead">
-          מלאי את הפרטים ונקבע יחד זמן נוח. התורים נשמרים במערכת — הצוות רואה אותם בדף הניהול.
+          מלאי את הפרטים ונקבע יחד זמן נוח. כל תור נשמר כמשבצת של שעה — אם השעה תפוסה, היא תסומן ולא ניתן לבחור
+          אותה. ניתן להוסיף אימייל לקבלת אישור בדוא״ל.
         </p>
 
         <form className="form" onSubmit={onSubmit}>
@@ -85,6 +152,16 @@ export function Booking() {
             />
           </label>
           <label className="field">
+            <span>אימייל לאישור (אופציונלי)</span>
+            <input
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              autoComplete="email"
+              placeholder="לדוגמה: name@gmail.com"
+            />
+          </label>
+          <label className="field">
             <span>שירות</span>
             <select value={service} onChange={(e) => setService(e.target.value)} required>
               {BOOKING_SERVICE_OPTIONS.map((opt) => (
@@ -101,7 +178,47 @@ export function Booking() {
             </label>
             <label className="field">
               <span>שעה</span>
-              <input type="time" value={time} onChange={(e) => setTime(e.target.value)} required />
+              {slotsLoading ? (
+                <p className="muted" style={{ margin: '0.35rem 0' }}>
+                  טוען משבצות…
+                </p>
+              ) : null}
+              {slotsError ? (
+                <>
+                  <p className="form-msg err" style={{ marginBottom: '0.5rem' }}>
+                    {slotsError}
+                  </p>
+                  <input
+                    type="time"
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    step={1800}
+                    required
+                  />
+                </>
+              ) : null}
+              {!slotsLoading && !slotsError && slots && slots.length > 0 ? (
+                <>
+                  {!hasAnyAvailable ? (
+                    <p className="form-msg err" role="alert">
+                      אין משבצות פנויות ביום זה — בחרי תאריך אחר.
+                    </p>
+                  ) : null}
+                  <select
+                    value={time}
+                    onChange={(e) => setTime(e.target.value)}
+                    required
+                    disabled={!hasAnyAvailable}
+                  >
+                    {slots.map((s) => (
+                      <option key={s.time} value={s.time} disabled={!s.available}>
+                        {s.time}
+                        {s.available ? '' : ' — תפוס'}
+                      </option>
+                    ))}
+                  </select>
+                </>
+              ) : null}
             </label>
           </div>
           <label className="field">
@@ -113,7 +230,15 @@ export function Booking() {
               placeholder="למשל: אורך קצר, צבע ניוד, רגישות לעור..."
             />
           </label>
-          <button type="submit" className="btn btn-primary btn-block" disabled={status === 'loading'}>
+          <button
+            type="submit"
+            className="btn btn-primary btn-block"
+            disabled={
+              status === 'loading' ||
+              slotsLoading ||
+              (!slotsError && slots !== null && !hasAnyAvailable)
+            }
+          >
             {status === 'loading' ? 'שולחים…' : 'שליחת בקשת תור'}
           </button>
         </form>
@@ -122,6 +247,18 @@ export function Booking() {
           <p className={`form-msg ${status === 'ok' ? 'ok' : status === 'err' ? 'err' : ''}`} role="status">
             {message}
           </p>
+        ) : null}
+
+        {status === 'ok' && giftUnlocked ? (
+          <div className="gift-unlock-banner" role="status">
+            <p className="gift-unlock-title">יש לך כרטיס גירוד מתנה</p>
+            <p className="gift-unlock-text">
+              קבעת את התור השני עם אותו מספר טלפון — פתחי כרטיס גירוד וגלי איזו הטבה קיבלת.
+            </p>
+            <Link to="/gift-scratch" className="btn btn-primary gift-unlock-btn">
+              פתיחת כרטיס הגירוד
+            </Link>
+          </div>
         ) : null}
 
         <p className="back-link">

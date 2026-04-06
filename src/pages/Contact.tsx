@@ -1,5 +1,12 @@
 import { Link } from 'react-router-dom'
-import { PHONE_DISPLAY, PHONE_E164, WHATSAPP_LINK } from '../constants/contact'
+import {
+  PHONE_DISPLAY,
+  PHONE_E164,
+  STUDIO_ADDRESS_DISPLAY,
+  STUDIO_GOOGLE_MAPS_URL,
+  STUDIO_WAZE_URL,
+  WHATSAPP_LINK,
+} from '../constants/contact'
 
 export function Contact() {
   return (
@@ -15,7 +22,7 @@ export function Contact() {
           <a className="contact-phone" href={`tel:${PHONE_E164}`}>
             {PHONE_DISPLAY}
           </a>
-          <p className="contact-hint">לחצי על המספר כדי לחייג ישירות מהנייד.</p>
+          <p className="contact-hint">לחץ על המספר כדי לחייג ישירות מהנייד.</p>
 
           <div className="contact-actions">
             <a className="btn btn-primary" href={`tel:${PHONE_E164}`}>
@@ -23,6 +30,20 @@ export function Contact() {
             </a>
             <a className="btn btn-ghost" href={WHATSAPP_LINK} target="_blank" rel="noopener noreferrer">
               WhatsApp
+            </a>
+          </div>
+        </div>
+
+        <div className="contact-panel">
+          <h2 className="contact-panel-title">כתובת</h2>
+          <p className="contact-address">{STUDIO_ADDRESS_DISPLAY}</p>
+          <p className="contact-hint">ניווט ישירות מהנייד למיקום הסטודיו.</p>
+          <div className="contact-actions">
+            <a className="btn btn-primary" href={STUDIO_GOOGLE_MAPS_URL} target="_blank" rel="noopener noreferrer">
+              פתיחה ב-Google Maps
+            </a>
+            <a className="btn btn-ghost" href={STUDIO_WAZE_URL} target="_blank" rel="noopener noreferrer">
+              ניווט ב-Waze
             </a>
           </div>
         </div>

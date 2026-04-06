@@ -1,4 +1,9 @@
 import { Link, Outlet, useLocation } from 'react-router-dom'
+import {
+  DEVELOPER_CONTACT_PATH,
+  DEVELOPER_EXTERNAL_URL,
+  DEVELOPER_SITE_LABEL,
+} from '../constants/developer'
 
 export function Layout() {
   const { pathname } = useLocation()
@@ -40,6 +45,15 @@ export function Layout() {
             <Link to="/contact">צור קשר</Link>
             {' · '}
             <Link to="/booking">קביעת תור</Link>
+          </p>
+          <p className="footer-dev-credit">
+            {DEVELOPER_EXTERNAL_URL ? (
+              <a href={DEVELOPER_EXTERNAL_URL} target="_blank" rel="noopener noreferrer">
+                {DEVELOPER_SITE_LABEL}
+              </a>
+            ) : (
+              <Link to={DEVELOPER_CONTACT_PATH}>{DEVELOPER_SITE_LABEL}</Link>
+            )}
           </p>
         </div>
       </footer>

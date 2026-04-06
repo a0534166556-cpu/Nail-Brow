@@ -99,7 +99,6 @@ export function Admin() {
               כניסה
             </button>
           </form>
-          <p className="admin-hint">ברירת מחדל לפיתוח: <code>admin123</code> — שנה את הסיסמה בייצור עם משתנה סביבה <code>ADMIN_PASSWORD</code>.</p>
         </div>
       </div>
     )
@@ -129,6 +128,7 @@ export function Admin() {
                 <tr>
                   <th>שם</th>
                   <th>טלפון</th>
+                  <th>אימייל</th>
                   <th>שירות</th>
                   <th>מועד</th>
                   <th>הערות</th>
@@ -141,6 +141,13 @@ export function Admin() {
                     <td>{a.name}</td>
                     <td>
                       <a href={`tel:${a.phone.replace(/\s/g, '')}`}>{a.phone}</a>
+                    </td>
+                    <td>
+                      {a.email?.trim() ? (
+                        <a href={`mailto:${a.email.trim()}`}>{a.email.trim()}</a>
+                      ) : (
+                        '—'
+                      )}
                     </td>
                     <td>{a.service}</td>
                     <td>{formatHebrewDate(a.date, a.time)}</td>

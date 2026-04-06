@@ -1,0 +1,18 @@
+/** נפתח אחרי תשובת שרת עם giftCardUnlocked (שני תורים עם אותו טלפון) */
+export const SCRATCH_ELIGIBLE_KEY = 'nailStudioScratchEligible'
+
+/** נשמר אחרי גילוי הפרס */
+export const SCRATCH_PRIZE_KEY = 'nailStudioScratchPrize'
+
+export type StoredScratchPrize = {
+  label: string
+  revealedAt: string
+}
+
+export function markScratchEligible(): void {
+  try {
+    localStorage.setItem(SCRATCH_ELIGIBLE_KEY, String(Date.now()))
+  } catch {
+    /* ignore */
+  }
+}
