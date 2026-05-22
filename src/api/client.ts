@@ -16,6 +16,12 @@ function apiUrl(path: string): string {
   return API_ORIGIN ? `${API_ORIGIN}${p}` : p
 }
 
+/** כותרת Authorization בטוחה לדפדפן: ערכי Header חייבים להיות ASCII — סיסמה בעברית מקודדת ב-Base64 (UTF-8). */
+function adminAuthHeaders(token: string): { Authorization: string } {
+  const b64 = btoa(unescape(encodeURIComponent(token)))
+  return { Authorization: `Bearer ${b64}` }
+}
+
 async function parseJsonBody<T>(res: Response): Promise<T | null> {
   const text = await res.text()
   if (!text) return null
@@ -70,7 +76,7 @@ export async function createAppointment(body: {
 
 export async function listAppointments(token: string): Promise<Appointment[]> {
   const res = await fetch(apiUrl('/api/appointments'), {
-    headers: { Authorization: `Bearer ${token}` },
+    headers: adminAuthHeaders(token),
   })
   const data = (await res.json()) as Appointment[] | { error?: string }
   if (!res.ok) {
@@ -82,7 +88,7 @@ export async function listAppointments(token: string): Promise<Appointment[]> {
 export async function deleteAppointment(id: string, token: string): Promise<void> {
   const res = await fetch(apiUrl(`/api/appointments/${encodeURIComponent(id)}`), {
     method: 'DELETE',
-    headers: { Authorization: `Bearer ${token}` },
+    headers: adminAuthHeaders(token),
   })
   if (!res.ok) {
     const data = (await res.json()) as { error?: string }

@@ -1,5 +1,7 @@
 node_modules
 dist
+.env
+!.env.example
 .netlify
 data/appointments.json
 .DS_Store

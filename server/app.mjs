@@ -9,7 +9,10 @@ import {
   isValidDateParam,
 } from './bookingSlots.mjs'
 import { appendAppointment, readAppointments, removeAppointment } from './storage.mjs'
-import { notifyBookingConfirmed } from './notifyBooking.mjs'
+import {
+  notifyFirstBookingThankYou,
+  notifyGiftScratchUnlocked,
+} from './notifyBooking.mjs'
 
 function normalizeOptionalEmail(raw) {
   if (typeof raw !== 'string') return ''
@@ -26,14 +29,23 @@ function normalizePhoneDigits(phone) {
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const root = path.join(__dirname, '..')
 
+/** תורים מצטברים מאותו מספר טלפון (כל השירותים) לקבלת כרטיס גירוד */
+const GIFT_CARD_AFTER_BOOKINGS = 3
+
 export function createApp({ enableStatic = false } = {}) {
   const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin123'
 
   function adminAuth(req) {
     const header = req.headers.authorization
     if (!header?.startsWith('Bearer ')) return false
-    const token = header.slice(7)
-    return token === ADMIN_PASSWORD
+    const raw = header.slice(7).trim()
+    if (raw === ADMIN_PASSWORD) return true
+    try {
+      const decoded = Buffer.from(raw, 'base64').toString('utf8')
+      return decoded === ADMIN_PASSWORD
+    } catch {
+      return false
+    }
   }
 
   const app = express()
@@ -118,10 +130,19 @@ export function createApp({ enableStatic = false } = {}) {
       const samePhoneBefore = list.filter(
         (a) => normalizePhoneDigits(a.phone) === phoneKey,
       ).length
-      const giftCardUnlocked = samePhoneBefore + 1 >= 2
+      const giftCardUnlocked = samePhoneBefore + 1 >= GIFT_CARD_AFTER_BOOKINGS
+      const isFirstPhoneBooking = samePhoneBefore === 0
+      const isGiftScratchMilestone = samePhoneBefore + 1 === GIFT_CARD_AFTER_BOOKINGS
       await appendAppointment(row)
       res.status(201).json({ ...row, giftCardUnlocked })
-      void notifyBookingConfirmed(row).catch(() => {})
+      if (trimmed.email) {
+        if (isFirstPhoneBooking) {
+          void notifyFirstBookingThankYou(row).catch(() => {})
+        }
+        if (isGiftScratchMilestone) {
+          void notifyGiftScratchUnlocked(row).catch(() => {})
+        }
+      }
     } catch (err) {
       next(err)
     }

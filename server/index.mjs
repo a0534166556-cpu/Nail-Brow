@@ -1,4 +1,12 @@
+import path from 'path'
+import { fileURLToPath } from 'url'
+import dotenv from 'dotenv'
 import { createApp } from './app.mjs'
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url))
+const root = path.join(__dirname, '..')
+dotenv.config({ path: path.join(root, '.env') })
+dotenv.config({ path: path.join(root, '.env.local'), override: true })
 
 const PORT = Number(process.env.PORT) || 3040
 const isProd = process.env.NODE_ENV === 'production'

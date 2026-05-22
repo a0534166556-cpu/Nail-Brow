@@ -279,9 +279,12 @@ export function GiftScratch() {
           <h1 className="page-title gift-scratch-title">כרטיס מתנה</h1>
           <div className="scratch-locked-card">
             <p>
-              כרטיס הגירוד נפתח אחרי <strong>שני תורים</strong> שמוזמנים מאותו מספר טלפון דרך האתר.
+              כרטיס הגירוד נפתח אחרי <strong>שלושה תורים מצטברים</strong> עם אותו מספר טלפון דרך האתר —{' '}
+              <strong>לא משנה באיזה שירות</strong>.
             </p>
-            <p className="muted">לאחר התור השני תופיע הודעה בדף הקביעה עם קישור לכאן.</p>
+            <p className="muted">
+              לאחר התור השלישי — אם הוזן אימייל יישלח גם דוא״ל, ותופיע הודעה בדף הקביעה עם קישור לכאן.
+            </p>
           </div>
           <p className="back-link">
             <Link to="/booking">לקביעת תור</Link>

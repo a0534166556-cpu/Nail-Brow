@@ -1618,7 +1618,7 @@ a:hover {
   box-shadow: 0 8px 22px rgba(37, 211, 102, 0.4);
 }
 
-/* —— כרטיס גירוד / מתנה אחרי שני תורים —— */
+/* —— כרטיס גירוד / מתנה אחרי שלושה תורים מצטברים —— */
 .gift-scratch-page .gift-scratch-title {
   background: linear-gradient(120deg, var(--accent) 0%, #8b5a3c 45%, var(--accent-2) 100%);
   -webkit-background-clip: text;

@@ -1,4 +1,4 @@
-/** נפתח אחרי תשובת שרת עם giftCardUnlocked (שני תורים עם אותו טלפון) */
+/** נפתח אחרי תשובת שרת עם giftCardUnlocked (שלושה תורים מצטברים עם אותו טלפון) */
 export const SCRATCH_ELIGIBLE_KEY = 'nailStudioScratchEligible'
 
 /** נשמר אחרי גילוי הפרס */

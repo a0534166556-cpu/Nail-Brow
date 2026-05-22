@@ -101,7 +101,7 @@ export function Booking() {
       }
       setStatus('ok')
       setMessage(
-        'התור נשמר בהצלחה! נחזור אליך לאישור במידת הצורך. אם הוזן אימייל והמערכת מוגדרת — תישלח אליך גם הודעה בדוא״ל.',
+        'התור נשמר בהצלחה! נחזור אליך לאישור במידת הצורך. אם הוזן אימייל והמערכת מוגדרת — בתור הראשון מהטלפון יישלח מכתב תודה, ובתור השלישי (מצטבר) מייל עם כרטיס הגירוד.',
       )
       setName('')
       setPhone('')
@@ -126,7 +126,7 @@ export function Booking() {
         <h1 className="page-title">קביעת תור</h1>
         <p className="page-lead">
           מלאי את הפרטים ונקבע יחד זמן נוח. כל תור נשמר כמשבצת של שעה — אם השעה תפוסה, היא תסומן ולא ניתן לבחור
-          אותה. ניתן להוסיף אימייל לקבלת אישור בדוא״ל.
+          אותה. ניתן להוסיף אימייל — יישלח מכתב תודה חם ופרטי הבקשה בדוא״ל (כשהמערכת מוגדרת).
         </p>
 
         <form className="form" onSubmit={onSubmit}>
@@ -152,7 +152,7 @@ export function Booking() {
             />
           </label>
           <label className="field">
-            <span>אימייל לאישור (אופציונלי)</span>
+            <span>אימייל למכתב תודה (אופציונלי)</span>
             <input
               type="email"
               value={email}
@@ -253,7 +253,7 @@ export function Booking() {
           <div className="gift-unlock-banner" role="status">
             <p className="gift-unlock-title">יש לך כרטיס גירוד מתנה</p>
             <p className="gift-unlock-text">
-              קבעת את התור השני עם אותו מספר טלפון — פתחי כרטיס גירוד וגלי איזו הטבה קיבלת.
+              הגעת לשלושה תורים מצטברים עם אותו מספר טלפון (כל השירותים) — פתחי כרטיס גירוד וגלי איזו הטבה קיבלת.
             </p>
             <Link to="/gift-scratch" className="btn btn-primary gift-unlock-btn">
               פתיחת כרטיס הגירוד
