@@ -4,9 +4,19 @@ import { fileURLToPath } from 'url'
 import { getStore } from '@netlify/blobs'
 import * as db from './db.mjs'
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const dataDir = path.join(__dirname, '..', 'data')
-const dataFile = path.join(dataDir, 'appointments.json')
+function fsDataPaths() {
+  try {
+    if (import.meta.url) {
+      const dir = path.dirname(fileURLToPath(import.meta.url))
+      const dataDir = path.join(dir, '..', 'data')
+      return { dataDir, dataFile: path.join(dataDir, 'appointments.json') }
+    }
+  } catch {
+    /* bundled serverless */
+  }
+  const dataDir = path.join(process.cwd(), 'data')
+  return { dataDir, dataFile: path.join(dataDir, 'appointments.json') }
+}
 
 const BLOB_STORE = 'nail-studio-appointments'
 const BLOB_KEY = 'appointments-list'
@@ -18,6 +28,7 @@ function storageMode() {
 }
 
 async function readFs() {
+  const { dataDir, dataFile } = fsDataPaths()
   await fs.mkdir(dataDir, { recursive: true })
   try {
     await fs.access(dataFile)
@@ -34,6 +45,7 @@ async function readFs() {
 }
 
 async function writeFs(list) {
+  const { dataDir, dataFile } = fsDataPaths()
   await fs.mkdir(dataDir, { recursive: true })
   await fs.writeFile(dataFile, JSON.stringify(list, null, 2), 'utf8')
 }

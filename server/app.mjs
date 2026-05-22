@@ -26,8 +26,17 @@ function normalizePhoneDigits(phone) {
   return String(phone ?? '').replace(/\D/g, '')
 }
 
-const __dirname = path.dirname(fileURLToPath(import.meta.url))
-const root = path.join(__dirname, '..')
+/** נתיב לקבצי static — רק בשרת Node מלא; ב-Netlify Functions אין import.meta.url תקין */
+function resolveStaticRoot() {
+  try {
+    if (import.meta.url) {
+      return path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
+    }
+  } catch {
+    /* bundled serverless */
+  }
+  return process.cwd()
+}
 
 /** תורים מצטברים מאותו מספר טלפון (כל השירותים) לקבלת כרטיס גירוד */
 const GIFT_CARD_AFTER_BOOKINGS = 3
@@ -167,7 +176,7 @@ export function createApp({ enableStatic = false } = {}) {
   })
 
   if (enableStatic) {
-    const dist = path.join(root, 'dist')
+    const dist = path.join(resolveStaticRoot(), 'dist')
     app.use(express.static(dist))
     app.use((req, res, next) => {
       if (req.method !== 'GET' && req.method !== 'HEAD') return next()

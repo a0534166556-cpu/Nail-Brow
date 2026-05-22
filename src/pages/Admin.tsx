@@ -52,9 +52,12 @@ export function Admin() {
 
   function login(e: React.FormEvent) {
     e.preventDefault()
-    sessionStorage.setItem(STORAGE_KEY, password)
-    setToken(password)
+    const trimmed = password.trim()
+    if (!trimmed) return
+    sessionStorage.setItem(STORAGE_KEY, trimmed)
+    setToken(trimmed)
     setPassword('')
+    setError('')
   }
 
   function logout() {
@@ -93,6 +96,8 @@ export function Admin() {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 autoComplete="current-password"
+                dir="ltr"
+                spellCheck={false}
               />
             </label>
             <button type="submit" className="btn btn-primary btn-block">
