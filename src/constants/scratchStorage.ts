@@ -7,6 +7,8 @@ export const SCRATCH_PRIZE_KEY = 'nailStudioScratchPrize'
 export type StoredScratchPrize = {
   label: string
   revealedAt: string
+  /** true = גירוד אמיתי; false = חשיפה בלי גירוד (ניתן לגרוד שוב) */
+  scratched?: boolean
 }
 
 export function markScratchEligible(): void {

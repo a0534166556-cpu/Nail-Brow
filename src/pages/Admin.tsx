@@ -20,6 +20,22 @@ function formatHebrewDate(dateStr: string, timeStr: string) {
   }
 }
 
+/** פותח תוכנת דוא״ל עם נמען, נושא וגוף מוכנים ללקוח */
+function buildCustomerMailtoHref(a: Appointment): string {
+  const to = a.email?.trim()
+  if (!to) return ''
+  const when = formatHebrewDate(a.date, a.time)
+  const subject = encodeURIComponent(`תור ב־Nail & Brow — ${a.name}`)
+  const body = encodeURIComponent(
+    `שלום ${a.name},\n\n` +
+      `בקשר לתור שנקבע אצלנו:\n` +
+      `שירות: ${a.service}\n` +
+      `מועד: ${when}\n\n` +
+      `בברכה,\nצוות Nail & Brow`,
+  )
+  return `mailto:${encodeURIComponent(to)}?subject=${subject}&body=${body}`
+}
+
 export function Admin() {
   const [password, setPassword] = useState('')
   const [token, setToken] = useState(() => sessionStorage.getItem(STORAGE_KEY) ?? '')
@@ -149,7 +165,13 @@ export function Admin() {
                     </td>
                     <td>
                       {a.email?.trim() ? (
-                        <a href={`mailto:${a.email.trim()}`}>{a.email.trim()}</a>
+                        <a
+                          className="admin-email-link"
+                          href={buildCustomerMailtoHref(a)}
+                          title="שליחת אימייל ללקוח"
+                        >
+                          {a.email.trim()}
+                        </a>
                       ) : (
                         '—'
                       )}
