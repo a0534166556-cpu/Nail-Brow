@@ -4,12 +4,14 @@ import {
   DEVELOPER_EXTERNAL_URL,
   DEVELOPER_SITE_LABEL,
 } from '../constants/developer'
+import { PageSeo } from './PageSeo'
 
 export function Layout() {
   const { pathname } = useLocation()
 
   return (
     <div className="layout">
+      <PageSeo />
       <header className="header">
         <div className="header-inner">
           <Link to="/" className="logo">
