@@ -9,7 +9,8 @@ dotenv.config({ path: path.join(root, '.env') })
 dotenv.config({ path: path.join(root, '.env.local'), override: true })
 
 const PORT = Number(process.env.PORT) || 3040
-const isProd = process.env.NODE_ENV === 'production'
+const isProd =
+  process.env.NODE_ENV === 'production' || Boolean(process.env.RAILWAY_ENVIRONMENT)
 
 const app = createApp({ enableStatic: isProd })
 
