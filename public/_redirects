@@ -1,0 +1,7 @@
+# קבצים סטטיים ל-SEO — לפני fallback של React
+/googlec6126160b423db60.html  /googlec6126160b423db60.html  200
+/robots.txt                   /robots.txt                   200
+/sitemap.xml                  /sitemap.xml                  200
+/og-image.svg                 /og-image.svg                 200
+/api/*                        /.netlify/functions/api         200
+/*                            /index.html                    200
